@@ -1,1 +1,1 @@
-# PathFinding-A-
+# PathFinding using A* algorithm
