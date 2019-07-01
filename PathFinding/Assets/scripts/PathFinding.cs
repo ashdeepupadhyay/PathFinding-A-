@@ -8,22 +8,12 @@ using System.Linq;
 public class PathFinding : MonoBehaviour {
     Grid grid;
     PathRequestManager requestManager;
-    //public Transform seeker, target;
     private void Awake()
     {
         requestManager = GetComponent<PathRequestManager>();
         grid = GetComponent<Grid>();
     }
-    /*
-    void Update()
-    {
-        if (Input.GetButtonDown("Jump"))
-        {
-            UnityEngine.Debug.Log("finding path");
-            FindPath(seeker.position, target.position);
-        }
-    }
-    */
+
     IEnumerator FindPath(Vector3 startPos,Vector3 targetPos)
     {
         Stopwatch sw = new Stopwatch();
@@ -35,7 +25,6 @@ public class PathFinding : MonoBehaviour {
 
         if (startNode.walkable && targetNode.walkable)
         {
-            //List<Node> openSet = new List<Node>();
             Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
             HashSet<Node> closedSet = new HashSet<Node>();
 
@@ -44,17 +33,6 @@ public class PathFinding : MonoBehaviour {
             while (openSet.Count > 0)
             {
                 Node currentNode = openSet.RemoveFirst();
-                /*
-                Node currentNode = openSet[0];
-                for(int i=1;i < openSet.Count; i++)
-                {
-                    if (openSet[i].fCost < currentNode.fCost||openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost)
-                    {
-                        currentNode = openSet[i];
-                    }
-                }
-                openSet.Remove(currentNode);
-                */
                 closedSet.Add(currentNode);
 
                 if (currentNode == targetNode)
@@ -62,9 +40,7 @@ public class PathFinding : MonoBehaviour {
                     sw.Stop();
                     print("Path found " + sw.ElapsedMilliseconds + "ms");
                     pathSuccess = true;
-                    //RetracePath(startNode, targetNode);
-                    break;
-                    //return;              
+                    break;             
                 }
 
                 foreach (Node neigbour in grid.GetNeighbours(currentNode))
@@ -84,11 +60,13 @@ public class PathFinding : MonoBehaviour {
                         {
                             openSet.Add(neigbour);
                         }
+                        else
+                        {
+                            openSet.UpdateItem(neigbour);
+                        }
                     }
                 }
-
             }
-
         }
         
         yield return null;
@@ -110,12 +88,8 @@ public class PathFinding : MonoBehaviour {
             currentNode = currentNode.parent;
         }
         Vector3[] waypoints = SimplifyPath(path);
-        //waypoints.Reverse();
         Array.Reverse(waypoints);
         return waypoints;
-        //path.Reverse();
-
-        //grid.path = path;
     }
     Vector3[] SimplifyPath(List<Node> path)
     {
