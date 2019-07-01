@@ -13,6 +13,7 @@ public class Node :IHeapItem<Node> {
 
     public Node parent;
     int heapIndex;
+    public int movementPenalty;
     public int fCost
     {
         get
@@ -20,12 +21,13 @@ public class Node :IHeapItem<Node> {
             return gCost + hCost;
         }
     }
-    public Node(bool _walkable, Vector3 _worldPos,int _gridX,int _gridY)
+    public Node(bool _walkable, Vector3 _worldPos,int _gridX,int _gridY,int _penalty)
     {
         walkable = _walkable;
         worldPositon = _worldPos;
         gridX = _gridX;
         gridY = _gridY;
+        movementPenalty = _penalty;
     }
 
     public int HeapIndex
