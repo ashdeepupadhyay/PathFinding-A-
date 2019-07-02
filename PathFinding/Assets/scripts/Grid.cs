@@ -13,6 +13,9 @@ public class Grid :MonoBehaviour{
     public TerrainType[] walkableRegions;
     LayerMask walkableMask;
     Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
+    public int obsticleProximityPenalty=1000;
+    int penaltyMin = int.MaxValue;
+    int penaltyMax = int.MinValue;
     void Awake()
     {
         nodeDiameter = nodeRadius * 2;
@@ -24,7 +27,6 @@ public class Grid :MonoBehaviour{
             walkableRegionsDictionary.Add((int)Mathf.Log(region.terrrainMask.value,2),region.terrainPenalty);
         }
         CreateGrid();
-
     }
     private void OnDrawGizmos()
     {
@@ -33,8 +35,10 @@ public class Grid :MonoBehaviour{
             {
                 foreach (Node n in grid)
                 {
-                    Gizmos.color = (n.walkable) ? Color.white : Color.red;                   
-                    Gizmos.DrawCube(n.worldPositon, Vector3.one * (nodeDiameter - .1f));
+                    Gizmos.color = Color.Lerp(Color.white, Color.black, Mathf.InverseLerp(penaltyMin, penaltyMax, n.movementPenalty));
+                    
+                    Gizmos.color = (n.walkable) ? Gizmos.color : Color.red;                   
+                    Gizmos.DrawCube(n.worldPositon, Vector3.one * (nodeDiameter));
                 }
             }       
     }
@@ -57,15 +61,18 @@ public class Grid :MonoBehaviour{
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward*(y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius,unwalklableMask));
                 int movementPenalty = 0;
-                if (walkable)
+
+                Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 100, walkableMask))
                 {
-                    Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
-                    RaycastHit hit;
-                    if(Physics.Raycast(ray,out hit, 100, walkableMask))
-                    {
-                        walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
-                    }
+                    walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
                 }
+                if (!walkable)
+                {
+                    movementPenalty += obsticleProximityPenalty;
+                }
+                
                 grid[x, y] = new Node(walkable, worldPoint,x,y,movementPenalty);
             }
         }
@@ -131,6 +138,9 @@ public class Grid :MonoBehaviour{
             }
         }
 
+        
+
+
         for (int x = 0; x < gridSizeX; ++x)
         {
             for (int y = -kernelExtents; y <= kernelExtents; y++)
@@ -138,14 +148,24 @@ public class Grid :MonoBehaviour{
                 int sampleY = Mathf.Clamp(y, 0, kernelExtents);
                 penaltiesVerticalPass[x,0] += penaltiesHorizontalPass[x,sampleY];
             }
+            int blurredPenalty = Mathf.RoundToInt(penaltiesVerticalPass[x, 0] / (kernelSize * kernelSize));
+            grid[x, 0].movementPenalty = blurredPenalty;
             for (int y = 1; y < gridSizeY; y++)
             {
                 int removeIndex = Mathf.Clamp(y - kernelExtents - 1, 0, gridSizeY);
                 int addIndex = Mathf.Clamp(y + kernelExtents, 0, gridSizeY - 1);
 
                 penaltiesVerticalPass[x, y] = penaltiesVerticalPass[x, y-1] - penaltiesHorizontalPass[x,removeIndex]+penaltiesHorizontalPass[x,addIndex];
-                int blurredPenalty = Mathf.RoundToInt(penaltiesVerticalPass[x, y] / (kernelSize * kernelSize));
+                blurredPenalty = Mathf.RoundToInt(penaltiesVerticalPass[x, y] / (kernelSize * kernelSize));
                 grid[x, y].movementPenalty = blurredPenalty;
+                if (blurredPenalty > penaltyMax)
+                {
+                    penaltyMax = blurredPenalty;
+                }
+                if (blurredPenalty < penaltyMin)
+                {
+                    penaltyMin = blurredPenalty;
+                }
             }
         }
     }

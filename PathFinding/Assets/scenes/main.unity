@@ -824,7 +824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7773be02efe6b03428fd17298a0e5042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diplsayGridGizmos: 0
+  diplsayGridGizmos: 1
   unwalklableMask:
     serializedVersion: 2
     m_Bits: 256
@@ -834,11 +834,12 @@ MonoBehaviour:
   - terrrainMask:
       serializedVersion: 2
       m_Bits: 512
-    terrainPenalty: 0
+    terrainPenalty: 50
   - terrrainMask:
       serializedVersion: 2
       m_Bits: 1024
     terrainPenalty: 100
+  obsticleProximityPenalty: 1000
 --- !u!4 &825146563
 Transform:
   m_ObjectHideFlags: 0
