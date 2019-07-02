@@ -834,11 +834,11 @@ MonoBehaviour:
   - terrrainMask:
       serializedVersion: 2
       m_Bits: 512
-    terrainPenalty: 5
+    terrainPenalty: 0
   - terrrainMask:
       serializedVersion: 2
       m_Bits: 1024
-    terrainPenalty: 0
+    terrainPenalty: 100
 --- !u!4 &825146563
 Transform:
   m_ObjectHideFlags: 0
@@ -1014,7 +1014,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4584943004751202, guid: bf486b442241d24459289162f69fe2ff, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -17.1
+      value: -18.9
       objectReference: {fileID: 0}
     - target: {fileID: 4584943004751202, guid: bf486b442241d24459289162f69fe2ff, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1043,6 +1043,10 @@ Prefab:
     - target: {fileID: 4584943004751202, guid: bf486b442241d24459289162f69fe2ff, type: 2}
       propertyPath: m_RootOrder
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584943004751202, guid: bf486b442241d24459289162f69fe2ff, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 2.34
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bf486b442241d24459289162f69fe2ff, type: 2}
@@ -1604,6 +1608,10 @@ Prefab:
     - target: {fileID: 1662250883570916, guid: bf486b442241d24459289162f69fe2ff, type: 2}
       propertyPath: m_Name
       value: Bridge_Small (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584943004751202, guid: bf486b442241d24459289162f69fe2ff, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 2.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bf486b442241d24459289162f69fe2ff, type: 2}
