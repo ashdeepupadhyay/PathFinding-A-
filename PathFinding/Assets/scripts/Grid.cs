@@ -23,7 +23,7 @@ public class Grid :MonoBehaviour{
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         foreach(TerrainType region in walkableRegions)
         {
-            walkableMask.value += region.terrrainMask.value;
+            walkableMask.value |= region.terrrainMask.value;
             walkableRegionsDictionary.Add((int)Mathf.Log(region.terrrainMask.value,2),region.terrainPenalty);
         }
         CreateGrid();
