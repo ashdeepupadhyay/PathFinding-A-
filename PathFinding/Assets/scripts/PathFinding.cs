@@ -7,21 +7,19 @@ using System.Linq;
 
 public class PathFinding : MonoBehaviour {
     Grid grid;
-    PathRequestManager requestManager;
     private void Awake()
     {
-        requestManager = GetComponent<PathRequestManager>();
         grid = GetComponent<Grid>();
     }
 
-    IEnumerator FindPath(Vector3 startPos,Vector3 targetPos)
+    public void FindPath(PathRequest request,Action<PathResult> callback)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
         Vector3[] wayPoints = new Vector3[0];
         bool pathSuccess = false;
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos);
+        Node startNode = grid.NodeFromWorldPoint(request.pathStart);
+        Node targetNode = grid.NodeFromWorldPoint(request.pathEnd);
 
         if (startNode.walkable && targetNode.walkable)
         {
@@ -67,14 +65,13 @@ public class PathFinding : MonoBehaviour {
                     }
                 }
             }
-        }
-        
-        yield return null;
+        }  
         if (pathSuccess)
         {
             wayPoints = RetracePath(startNode, targetNode);
+            pathSuccess = wayPoints.Length > 0;
         }
-        requestManager.FinishedProcessingPath(wayPoints, pathSuccess);
+        callback(new PathResult(wayPoints, pathSuccess, request.callback));
     }
 
     private Vector3[] RetracePath(Node startNode,Node endNode)
@@ -120,8 +117,5 @@ public class PathFinding : MonoBehaviour {
             return 14 * distX + 10 * (distY - distX);
         }
     }
-    public void StartFindPath(Vector3 startPos,Vector3 targetPos)
-    {
-        StartCoroutine(FindPath(startPos,targetPos));
-    }
+   
 }

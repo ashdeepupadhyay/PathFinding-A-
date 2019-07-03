@@ -10,8 +10,7 @@ public class Unit : MonoBehaviour {
     public float turnDst = 5;
     public float turnSpeed = 3;
     public float stoppingDst = 10;
-    //Vector3[] path;
-    //int targetIndex;
+
     Path path;
 	void Start () {
         StartCoroutine(UpdatePath());
@@ -23,7 +22,7 @@ public class Unit : MonoBehaviour {
         {
             yield return new WaitForSeconds(.3f);
         }
-        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+        PathRequestManager.RequestPath(new PathRequest(transform.position, target.position, OnPathFound));
 
         float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
         Vector3 targetPosOld = target.position;
@@ -33,16 +32,15 @@ public class Unit : MonoBehaviour {
             yield return new WaitForSeconds(minPathUpdateTime);
             if ((target.position - targetPosOld).sqrMagnitude > sqrMoveThreshold)
             {
-                PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+                PathRequestManager.RequestPath(new PathRequest(transform.position, target.position, OnPathFound));
                 targetPosOld = target.position;
             }
         }
     }
     public void OnPathFound(Vector3[] wayPoints,bool pathSuccessful)
-    {//check
+    {
         if (pathSuccessful)
-        {
-            //path = newPath;
+        {          
             path = new Path(wayPoints, transform.position,turnDst,stoppingDst);
 
             StopCoroutine("FollowPath");
@@ -100,22 +98,6 @@ public class Unit : MonoBehaviour {
         if(path!=null)
         {
             path.DrawWithGizmos();
-        }
-        //if (path != null)
-        //{
-        //    for(int i = targetIndex; i < path.Length; i++)
-        //    {
-        //        Gizmos.color = Color.blue;
-        //        Gizmos.DrawCube(path[i], Vector3.one);
-        //        if (i == targetIndex)
-        //        {
-        //            Gizmos.DrawLine(transform.position, path[i]);
-        //        }
-        //        else
-        //        {
-        //            Gizmos.DrawLine(path[i-1], path[i]);
-        //        }
-        //    }
-        //}
+        }       
     }
 }
